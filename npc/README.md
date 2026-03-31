@@ -16,7 +16,7 @@ A browser-based Bomberman-style game. Play locally against friends or singleplay
 
 **1. Download the project**
 ```bash
-git clone https://gitea.kood.tech/kristenjarvala/npc
+git clone 
 cd npc
 ```
 
