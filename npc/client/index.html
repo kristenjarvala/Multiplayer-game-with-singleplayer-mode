@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Bóbr Blast</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/npc.css">
+</head>
+
+<body>
+    <!-- MAIN MENU -->
+    <div id="main-menu">
+        <img src="/assets/menu/bober-title.png" alt="Bóbr Blast" style="max-width: 750px; margin-bottom: 50px;">
+        <div class="menu-section">
+            <h2>Create Game</h2>
+            <input type="text" id="create-name" placeholder="Lobby Name" maxlength="15">
+            <input type="password" id="create-password" placeholder="Password (Optional)">
+            <button id="create-btn">Create Lobby</button>
+        </div>
+
+        <div class="menu-section" id="join-section">
+            <h2>Join Game</h2>
+            <input type="text" id="join-id" placeholder="Lobby ID" maxlength="6">
+            <input type="password" id="join-password" placeholder="Password (Optional)">
+            <button id="join-btn">Join Lobby</button>
+        </div>
+        <div id="error-msg"></div>
+    </div>
+
+    <!-- LOBBY -->
+    <div id="lobby">
+        <!-- TOP ROW: Skin selector + Lobby info -->
+        <div id="lobby-top-row">
+
+            <!-- LEFT: Skin Selector -->
+            <div id="lobby-skin-panel" class="lobby-panel">
+                <div class="panel-title">SELECT YOUR BOBER</div>
+                <div id="skin-preview-box">
+                    <button id="skin-prev" class="skin-arrow">&#9664;</button>
+                    <div id="skin-preview-container" class="color-1">
+                        <img id="skin-preview-img" src="/assets/skins/skin-1.png" alt="Skin Preview" />
+                    </div>
+                    <button id="skin-next" class="skin-arrow">&#9654;</button>
+                </div>
+                <div id="skin-name-display">BOBER 1</div>
+            </div>
+
+            <!-- CENTER: Lobby Info, Name, Ready -->
+            <div id="lobby-center-panel" class="lobby-panel">
+                <div id="lobby-code-box">
+                    <span class="lobby-code-label">LOBBY:</span>
+                    <!-- lobby-title holds ONLY the raw ID (set by menu.js) -->
+                    <span id="lobby-title" class="lobby-code-value">------</span>
+                </div>
+                <button id="copy-link-btn" class="lobby-copy-btn">&#128279; Copy Invite Link</button>
+                <p id="lobby-status" class="lobby-status-text">Waiting for players...</p>
+
+                <div id="name-input-area">
+                    <input type="text" id="name-input" placeholder="Your Name" maxlength="15" />
+                    <button id="set-name-btn">Set Name</button>
+                    <p id="name-error"></p>
+                </div>
+
+                <button id="start-btn" class="ready-btn">READY</button>
+                <button id="leave-btn" style="display:none;" class="leave-btn">Leave Game</button>
+            </div>
+
+        </div>
+
+        <!-- BOTTOM ROW: 3 fixed player slots (slot 2, 3, 4 — slot 1 is YOU) -->
+        <div id="lobby-slots-row">
+            <div class="lobby-slot" id="lobby-slot-1">
+                <div class="panel-title slot-title">PLAYER 2</div>
+                <div class="slot-content empty-slot">
+                    <span class="slot-waiting">Waiting for player...</span>
+                </div>
+            </div>
+            <div class="lobby-slot" id="lobby-slot-2">
+                <div class="panel-title slot-title">PLAYER 3</div>
+                <div class="slot-content empty-slot">
+                    <span class="slot-waiting">Waiting for player...</span>
+                </div>
+            </div>
+            <div class="lobby-slot" id="lobby-slot-3">
+                <div class="panel-title slot-title">PLAYER 4</div>
+                <div class="slot-content empty-slot">
+                    <span class="slot-waiting">Waiting for player...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hidden list kept for JS compatibility -->
+        <ul id="player-list" style="display:none;"></ul>
+
+        <!-- NPC CONFIG PANEL — visible only in single-player mode -->
+        <!-- initNPCConfig() in npcConfig.js shows/hides this panel -->
+        <div id="npc-config-panel">
+            <div class="panel-title">CONFIGURE BOTS</div>
+            <button id="add-bot-btn">+ Add Bot</button>
+            <div id="npc-slots-container"></div>
+        </div>
+    </div>
+
+    <!-- GAME CONTAINER -->
+    <div id="game-container">
+        <!-- TOP BAR -->
+        <div id="game-sidebar">
+            <!-- Player Cards -->
+            <div id="sidebar-players">
+                <div class="player-card" id="player-card-1">
+                    <div class="player-avatar"></div>
+                    <div class="player-card-name">PLAYER 1</div>
+                </div>
+                <div class="player-card" id="player-card-2">
+                    <div class="player-avatar"></div>
+                    <div class="player-card-name">PLAYER 2</div>
+                </div>
+                <div class="player-card" id="player-card-3">
+                    <div class="player-avatar"></div>
+                    <div class="player-card-name">PLAYER 3</div>
+                </div>
+                <div class="player-card" id="player-card-4">
+                    <div class="player-avatar"></div>
+                    <div class="player-card-name">PLAYER 4</div>
+                </div>
+            </div>
+
+            <!-- Timer -->
+            <div id="sidebar-timer">
+                <div id="game-timer-display">0:00</div>
+            </div>
+
+            <!-- Controls -->
+            <div id="sidebar-controls">
+                <button id="music-toggle-btn" class="control-btn">MUSIC</button>
+                <button id="fx-toggle-btn" class="control-btn">FX</button>
+                <button id="quit-game-btn" class="control-btn quit-btn">QUIT</button>
+            </div>
+        </div>
+
+        <!-- GAME BOARD -->
+        <div id="game-board"></div>
+    </div>
+
+    <!-- SPECTATE MESSAGE -->
+    <p id="spectate-msg">You died! Spectating...</p>
+
+    <!-- PAUSE OVERLAY -->
+    <div id="pause-overlay">
+        <h2>⏸ Game Paused</h2>
+        <p id="pause-info"></p>
+        <button id="resume-btn" class="pause-btn">▶ Resume</button>
+        <br>
+        <button id="quit-btn" class="pause-btn">🚪 Quit</button>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/npcConfig.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/menu.js"></script>
+    <script src="js/sound.js"></script>
+    <script src="js/lobby.js"></script>
+    <script src="js/pause.js"></script>
+    <script src="js/input.js"></script>
+</body>
+
+</html>
